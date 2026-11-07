@@ -12,6 +12,7 @@ from PySide6.QtGui import (
     QKeySequence, QAction, QIcon
 )
 from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import QSizePolicy
 import colorsys
 import random
 
@@ -115,6 +116,11 @@ class ColorButton(QPushButton):
         self.color_data = color_data
         self.parent_widget = parent_widget
 
+        # 창 크기 고정: 버튼의 최소 너비가 이름 길이에 좌우되지 않도록 하고,
+        # 넘치는 이름은 resizeEvent에서 '…'으로 줄입니다. (전체 이름은 툴팁으로 확인)
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        self.setMinimumSize(0, 0)
+
         # 1. 색상의 밝기(Luminance) 계산
         color = QColor(hexcode)
         r, g, b, _ = color.getRgb()
@@ -144,6 +150,11 @@ class ColorButton(QPushButton):
         self.clicked.connect(lambda: self.parent_widget.show_color(
             self.actual_name, self.hexcode, self.color_data, self.display_name.replace('\n', ' ')
         ))
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        avail = max(0, self.width() - 14)
+        self.setText(self.fontMetrics().elidedText(self.display_name, Qt.ElideRight, avail))
 
     def focusInEvent(self, event):
         super().focusInEvent(event)
@@ -354,11 +365,15 @@ class LatexColorTabs(QWidget):
 
         # 탭 위젯
         self.tabs = QTabWidget()
-        layout.addWidget(self.tabs)
+        self.tabs.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Expanding)
+        self.tabs.setMinimumSize(0, 300)
+        layout.addWidget(self.tabs, 1)
 
         # 정보 + 미리보기 박스
         self.info = QLabel("색상을 클릭하세요")
         self.info.setAlignment(Qt.AlignCenter)
+        self.info.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.info.setFixedHeight(self.info.fontMetrics().lineSpacing() * 2 + 8)
         layout.addWidget(self.info)
 
         self.preview = QFrame()
@@ -376,6 +391,7 @@ class LatexColorTabs(QWidget):
         self.default_status_msg = "단축키 - F4: 유사 색상 | F8: 보색 검색 | F5: 검색 초기화"
         self.status = QLabel(self.default_status_msg)
         self.status.setAlignment(Qt.AlignLeft)
+        self.status.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
         layout.addWidget(self.status)
 
         # F4: 유사 색상 검색
@@ -512,6 +528,11 @@ class LatexColorTabs(QWidget):
                     col = 0
                     row += 1
                     
+            # 항상 7열 x 10행을 균등 분할 (결과가 적어도 버튼 크기가 변하지 않음)
+            for c in range(7):
+                grid.setColumnStretch(c, 1)
+            for r in range(-(-self.per_tab // 7)):
+                grid.setRowStretch(r, 1)
             tab.setLayout(grid)
             self.tabs.addTab(tab, f"Page {i//self.per_tab + 1}")
 
