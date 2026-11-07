@@ -22,7 +22,7 @@ LaTeX에서 쓸 수 있는 색상 이름을 한 화면에서 훑어보고, 이�
 
 - **팔레트 탐색**: 콤보박스로 팔레트를 고르면 색상 버튼이 70개씩 `Page N` 탭으로 나뉘어 표시됩니다. 글자색은 배경 밝기에 맞춰 자동으로 바뀝니다.
 - **색상 정보**: 버튼을 클릭(또는 키보드 포커스)하면 하단에 HEX, LaTeX 색상 이름, RGB, CMYK 값과 미리보기가 나타납니다. 원본이 CMYK가 아닌 색의 CMYK는 근사 변환값이며, 정보창에 `[원본: …]`으로 구분해 표시합니다.
-- **복사**: `색상 이름 복사` / `RGB 값 복사` / `CMYK 값 복사` 버튼 또는 우클릭 메뉴.
+- **복사**: `색상 이름 복사` / `HEX 값 복사` / `RGB 값 복사` / `CMYK 값 복사` 버튼 또는 우클릭 메뉴. HEX는 `#` 없이 `RRGGBB`로 복사되어 `\definecolor{이름}{HTML}{RRGGBB}`에 바로 붙여 넣을 수 있습니다.
 - **이름 검색**: 대소문자·공백·특수문자를 무시하고 부분 일치로 찾습니다. 검색어를 따옴표(`"red"` 또는 `'red'`)로 감싸면 정확히 일치하는 이름만 보여 줍니다. `모든 패널 검색`을 켜면 전체 팔레트를 알파벳순으로 검색하며, 이름 뒤에 팔레트 약어가 붙습니다.
 - **RGB 검색**: R·G·B(0–255)와 허용 오차(기본 ±20)를 입력하면 조건에 맞는 색을 HSB 거리 기준으로 가까운 순서로 보여 줍니다. 비워 둔 채널은 조건에서 제외됩니다. 값을 `0`으로 입력한 채널은 오차와 관계없이 정확히 0인 색만 찾습니다.
 - **새 색상 추가**: 세 값을 모두 입력했는데 결과가 없으면 `\definecolor{이름}{RGB}{r,g,b}`를 클립보드에 복사해 줍니다. 이를 `usercolordef.tex`에 붙여 넣으세요. 앱을 실행하는 동안에는 `usercolordef (local)` 팔레트에도 임시로 추가됩니다.
@@ -58,7 +58,7 @@ LaTeX에서 쓸 수 있는 색상 이름을 한 화면에서 훑어보고, 이�
 Python 3와 PySide6가 필요합니다. Python 3.13 + PySide6 6.12 + PyInstaller 6.22 조합(Linux)에서 빌드와 실행을 확인했습니다.
 
 ```bash
-pip install PySide6
+pip install -r requirements.txt
 python latexcolorpalette.py
 ```
 
@@ -67,7 +67,7 @@ python latexcolorpalette.py
 ## 실행 파일 빌드 (PyInstaller)
 
 ```bash
-pip install pyinstaller PySide6
+pip install -r requirements.txt pyinstaller
 pyinstaller --noconfirm latexcolorpalette.spec
 ```
 
@@ -86,6 +86,7 @@ pyinstaller --noconfirm latexcolorpalette.spec
 |---|---|
 | `latexcolorpalette.py` | 앱 본체 (UI, 파서, 검색) |
 | `latexcolorpalette.spec` | PyInstaller 빌드 설정 |
+| `requirements.txt` | 실행에 필요한 Python 패키지 |
 | `latexcolorpalette.ico` / `.icns` / `.png` | 앱 아이콘 (Windows / macOS / Linux·창 아이콘) |
 | `latexcolors.sty`, `latexcolorsnames.txt` | latexcolors 정의 / 매뉴얼 표시 순서 |
 | `xkcdcolors.sty`, `xkcd_popular.txt` | xkcd 색상 정의 / 인기순 목록 |
@@ -107,3 +108,4 @@ pyinstaller --noconfirm latexcolorpalette.spec
 - `dvipsnam.def` — David Carlisle, Sebastian Rahtz
 
 앱 코드 자체는 MIT 라이선스로 배포합니다.
+

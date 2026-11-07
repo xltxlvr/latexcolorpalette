@@ -300,14 +300,17 @@ class LatexColorTabs(QWidget):
         # 상단 복사 버튼들
         btn_layout = QHBoxLayout()
         self.copy_name_btn = QPushButton("색상 이름 복사")
+        self.copy_hex_btn = QPushButton("HEX 값 복사")
         self.copy_rgb_btn = QPushButton("RGB 값 복사")
         self.copy_cmyk_btn = QPushButton("CMYK 값 복사")
 
         self.copy_name_btn.clicked.connect(self.copy_name)
+        self.copy_hex_btn.clicked.connect(self.copy_hex)
         self.copy_rgb_btn.clicked.connect(self.copy_rgb)
         self.copy_cmyk_btn.clicked.connect(self.copy_cmyk)
 
         btn_layout.addWidget(self.copy_name_btn)
+        btn_layout.addWidget(self.copy_hex_btn)
         btn_layout.addWidget(self.copy_rgb_btn)
         btn_layout.addWidget(self.copy_cmyk_btn)
         layout.addLayout(btn_layout)
@@ -398,14 +401,17 @@ class LatexColorTabs(QWidget):
         menu = QMenu(self)
 
         copy_name_action = QAction("색상 이름 복사", self)
+        copy_hex_action = QAction("HEX 복사", self)
         copy_rgb_action = QAction("RGB 복사", self)
         copy_cmyk_action = QAction("CMYK 복사", self)
 
         copy_name_action.triggered.connect(self.copy_name)
+        copy_hex_action.triggered.connect(self.copy_hex)
         copy_rgb_action.triggered.connect(self.copy_rgb)
         copy_cmyk_action.triggered.connect(self.copy_cmyk)
 
         menu.addAction(copy_name_action)
+        menu.addAction(copy_hex_action)
         menu.addAction(copy_rgb_action)
         menu.addAction(copy_cmyk_action)
 
@@ -544,6 +550,14 @@ class LatexColorTabs(QWidget):
             name = self.current_color[0]
             QGuiApplication.clipboard().setText(f"{name}")
             self.show_status(f"색상 이름 복사: {name}")
+
+    def copy_hex(self):
+        # '#' 없이 복사: \\definecolor{이름}{HTML}{RRGGBB} 에 바로 붙여넣을 수 있습니다.
+        if self.current_color:
+            r, g, b = self.current_color[1]
+            hex_str = "{:02X}{:02X}{:02X}".format(r, g, b)
+            QGuiApplication.clipboard().setText(hex_str)
+            self.show_status(f"HEX 값 복사 완료: {hex_str}")
 
     def copy_rgb(self):
         if self.current_color:
